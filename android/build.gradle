@@ -1,11 +1,13 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2' // Use appropriate version
-        // Other classpath dependencies
+        classpath 'com.android.tools.build:gradle:8.0.2' // Ensure this matches your Android Studio version
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10' // Add if you're using Kotlin
+        // Add any other required dependencies here
     }
 }
 
@@ -20,10 +22,35 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
+// Set custom build directories for your projects
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+// Define extra gradle properties to avoid hardcoding versions in multiple places
+ext {
+    // Define versions for libraries and tools here
+    compileSdkVersion = 33
+    minSdkVersion = 21
+    targetSdkVersion = 33
+    kotlinVersion = '1.8.10'
+}
+
+// Add optional performance improvements by defining project-wide properties
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion ext.compileSdkVersion
+                defaultConfig {
+                    minSdkVersion ext.minSdkVersion
+                    targetSdkVersion ext.targetSdkVersion
+                }
+            }
+        }
+    }
 }
